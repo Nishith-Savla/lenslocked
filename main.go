@@ -41,5 +41,4 @@ func main() {
 	})
 	fmt.Println("starting server on :3000...")
 	log.Fatalln(http.ListenAndServe(":3000", r))
-
 }
