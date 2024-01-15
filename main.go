@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"github.com/Nishith-Savla/lenslocked/models"
 	"log"
 	"net/http"
 
@@ -29,7 +31,21 @@ func main() {
 		"faq.gohtml", "tailwind.gohtml",
 	))))
 
-	usersController := controllers.Users{}
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
+	if err != nil {
+		panic(err)
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(db)
+
+	usersController := controllers.Users{
+		UserService: &models.UserService{DB: db},
+	}
 	usersController.Templates.New = views.Must(views.ParseFS(
 		templates.FS,
 		"signup.gohtml", "tailwind.gohtml",
