@@ -48,14 +48,14 @@ func main() {
 	// Create a table
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
+			id SMALLSERIAL PRIMARY KEY,
 			name VARCHAR(100),
 			email VARCHAR(100) UNIQUE NOT NULL
 		);
 		
 		CREATE TABLE IF NOT EXISTS orders (
-		    id SERIAL PRIMARY KEY,
-		    user_id INT NOT NULL,
+		    id SMALLSERIAL PRIMARY KEY,
+		    user_id SMALLINT NOT NULL,
 		    amount INT,
 		    description VARCHAR(1000)
 		);			
@@ -65,4 +65,18 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Tables created!")
+
+	name := "Nishith"
+	email := "nish@email.com"
+	// Insert some data
+	row := db.QueryRow(`
+		INSERT INTO users (name, email)
+		VALUES ($1, $2) RETURNING id;
+	`, name, email)
+	var id int16
+	err = row.Scan(&id)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("User created!, id:", id)
 }
