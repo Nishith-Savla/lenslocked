@@ -1,0 +1,5 @@
+CREATE TABLE users (
+    id SMALLSERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password CHAR(60) NOT NULL
+);
