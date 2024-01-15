@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/Nishith-Savla/lenslocked/models"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -105,40 +106,47 @@ func main() {
 	// 	}
 	// }
 	// fmt.Println("Created fake orders!")
+	//
+	// type Order struct {
+	// 	ID          int16
+	// 	UserID      int16
+	// 	Amount      int
+	// 	Description string
+	// }
+	//
+	// var (
+	// 	orders []Order
+	// 	userID int16 = 1
+	// )
+	// rows, err := db.Query(`
+	// 	SELECT id, amount, description FROM orders WHERE user_id = $1;
+	// `, userID)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer func(rows *sql.Rows) {
+	// 	err := rows.Close()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }(rows)
+	// for rows.Next() {
+	// 	order := Order{UserID: userID}
+	// 	err := rows.Scan(&order.ID, &order.Amount, &order.Description)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	orders = append(orders, order)
+	// }
+	// if err := rows.Err(); err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Printf("Orders: %#v\n", orders)
 
-	type Order struct {
-		ID          int16
-		UserID      int16
-		Amount      int
-		Description string
-	}
-
-	var (
-		orders []Order
-		userID int16 = 1
-	)
-	rows, err := db.Query(`
-		SELECT id, amount, description FROM orders WHERE user_id = $1;
-	`, userID)
+	us := models.UserService{DB: db}
+	user, err := us.Create("nishith@email.com", "password123")
 	if err != nil {
 		panic(err)
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(rows)
-	for rows.Next() {
-		order := Order{UserID: userID}
-		err := rows.Scan(&order.ID, &order.Amount, &order.Description)
-		if err != nil {
-			panic(err)
-		}
-		orders = append(orders, order)
-	}
-	if err := rows.Err(); err != nil {
-		panic(err)
-	}
-	fmt.Printf("Orders: %#v\n", orders)
+	fmt.Printf("Created user: %#v\n", user)
 }
