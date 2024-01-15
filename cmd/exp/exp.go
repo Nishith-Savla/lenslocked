@@ -7,31 +7,9 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-type PostgresConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Database string
-	SSLMode  string
-}
-
-func (cfg *PostgresConfig) String() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Database, cfg.SSLMode)
-}
-
 func main() {
-	cfg := PostgresConfig{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "baloo",
-		Password: "junglebook",
-		Database: "lenslocked",
-		SSLMode:  "disable",
-	}
-	fmt.Printf("%s", cfg)
-	db, err := sql.Open("pgx", cfg.String())
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -48,25 +26,25 @@ func main() {
 	fmt.Println("Connected!")
 
 	// Create a table
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-			id SMALLSERIAL PRIMARY KEY,
-			name VARCHAR(100),
-			email VARCHAR(100) UNIQUE NOT NULL
-		);
-		
-		CREATE TABLE IF NOT EXISTS orders (
-		    id SMALLSERIAL PRIMARY KEY,
-		    user_id SMALLINT NOT NULL,
-		    amount INT,
-		    description VARCHAR(1000)
-		);			
-	`)
+	// _, err = db.Exec(`
+	// 	CREATE TABLE IF NOT EXISTS users (
+	// 		id SMALLSERIAL PRIMARY KEY,
+	// 		name VARCHAR(100),
+	// 		email VARCHAR(100) UNIQUE NOT NULL
+	// 	);
 
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Tables created!")
+	// 	CREATE TABLE IF NOT EXISTS orders (
+	// 	    id SMALLSERIAL PRIMARY KEY,
+	// 	    user_id SMALLINT NOT NULL,
+	// 	    amount INT,
+	// 	    description VARCHAR(1000)
+	// 	);
+	// `)
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("Tables created!")
 
 	// Insert some data
 	// name := "Nishith"
@@ -106,14 +84,14 @@ func main() {
 	// 	}
 	// }
 	// fmt.Println("Created fake orders!")
-	//
+
 	// type Order struct {
 	// 	ID          int16
 	// 	UserID      int16
 	// 	Amount      int
 	// 	Description string
 	// }
-	//
+
 	// var (
 	// 	orders []Order
 	// 	userID int16 = 1
@@ -130,6 +108,7 @@ func main() {
 	// 		panic(err)
 	// 	}
 	// }(rows)
+
 	// for rows.Next() {
 	// 	order := Order{UserID: userID}
 	// 	err := rows.Scan(&order.ID, &order.Amount, &order.Description)
@@ -144,7 +123,7 @@ func main() {
 	// fmt.Printf("Orders: %#v\n", orders)
 
 	us := models.UserService{DB: db}
-	user, err := us.Create("nishith@email.com", "password123")
+	user, err := us.Create("nish@email.com", "password123")
 	if err != nil {
 		panic(err)
 	}
